@@ -1,0 +1,76 @@
+Step 1: Install NGINX
+If NGINX is not already installed on your server, you can install it using the package manager of your Linux distribution. For Ubuntu or Debian-based systems, use the following commands:
+
+sudo apt update
+sudo apt install nginx
+For CentOS or RHEL-based systems, use:
+
+sudo yum install epel-release
+sudo yum install nginx
+Step 2: Start and Enable NGINX
+Ensure NGINX is running and set to start on boot using the systemctl commands:
+
+sudo systemctl start nginx
+sudo systemctl enable nginx
+Step 3: Create a Directory for Your Website
+Create a directory structure for your website files. This is where you will store your website's content. Use your actual domain name in place of 'your_domain':
+
+sudo mkdir -p /var/www/your_domain/html
+Assign ownership and set the correct permissions:
+
+sudo chown -R $USER:$USER /var/www/your_domain/html
+sudo chmod -R 755 /var/www
+Step 4: Create a Sample HTML Page (Optional)
+To test your setup, create a sample index.html file in the directory you just created:
+
+echo "<html>
+  <head>
+    <title>Welcome to Your_domain!</title>
+  </head>
+  <body>
+    <h1>Success! The Your_domain virtual host is working!</h1>
+  </body>
+</html>
+Step 5: Create a New Configuration File for Your Website
+Create a new configuration file in the /etc/nginx/sites-available/ directory. This file will contain the server block settings for your domain:
+
+sudo nano /etc/nginx/sites-available/your_domain
+Insert the following configuration, ensuring you replace 'your_domain' with your actual domain name and adjust the document root if necessary:
+
+server {
+    listen 80;
+    server_name your_domain www.your_domain;
+
+    root /var/www/your_domain/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+Step 6: Enable the File by Creating a Link
+Activate the server block by linking the file you just created to the sites-enabled directory:
+
+sudo ln -s /etc/nginx/sites-available/your_domain /etc/nginx/sites-enabled/
+Step 7: Test NGINX Configuration
+It's crucial to test your NGINX configuration for any syntax errors before restarting the service:
+
+sudo nginx -t
+Step 8: Restart NGINX
+If the configuration test is successful, restart NGINX to apply the changes:
+
+sudo systemctl restart nginx
+Step 9: Adjust the Firewall (If Necessary)
+If you're using a firewall, ensure that HTTP and HTTPS traffic are permitted. For UFW users:
+
+sudo ufw allow 'Nginx HTTP'
+For firewalld users:
+
+sudo firewall-cmd --permanent --zone=public --add-service=http
+sudo firewall-cmd --permanent --zone=public --add-service=https
+sudo firewall-cmd --reload
+Step 10: Access Your Website
+Open a web browser and navigate to your domain:
+
+http://your_domain
+You should see the sample HTML page or the content you've uploaded to your website's directory.
